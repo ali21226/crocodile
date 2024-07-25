@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Crawler</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <h1>Web Crawler</h1>
+    <form id="crawlForm">
+        <label for="url">URL:</label>
+        <input type="text" id="url" name="url" required>
+        <label for="type">Crawl Type:</label>
+        <select id="type" name="type" required>
+            <option value="photos">Photos</option>
+            <option value="voices">Voices</option>
+            <option value="emails">Emails</option>
+            <option value="regex">Custom Regex</option>
+        </select>
+        <input type="text" id="pattern" name="pattern" placeholder="Enter regex pattern" style="display: none;">
+        <button type="submit">Crawl</button>
+    </form>
+    <div id="results"></div>
+    <script>
+        document.getElementById('type').addEventListener('change', function () {
+            const patternInput = document.getElementById('pattern');
+            if (this.value === 'regex') {
+                patternInput.style.display = 'block';
+            } else {
+                patternInput.style.display = 'none';
+            }
+        });
+
+        document.getElementById('crawlForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const url = document.getElementById('url').value;
+            const type = document.getElementById('type').value;
+            const pattern = document.getElementById('pattern').value;
+
+            fetch(`/crawl/?url=${url}&type=${type}&pattern=${pattern}`)
+                .then(response => response.json())
+                .then(data => {
+                    const resultsDiv = document.getElementById('results');
+                    resultsDiv.innerHTML = `<h2>Results</h2><pre>${JSON.stringify(data.results, null, 2)}</pre>`;
+                });
+        });
+    </script>
+</body>
+</html>

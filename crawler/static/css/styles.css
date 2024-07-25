@@ -1,0 +1,74 @@
+/* styles.css */
+
+/* Basic reset for consistent styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #e0f2f1; /* Light teal background */
+    color: #333;
+}
+
+h1 {
+    color: #0288d1; /* Bright blue */
+    text-align: center;
+    margin: 20px 0;
+}
+
+form {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    background-color: #ffffff; /* White background for the form */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #0288d1;
+}
+
+input[type="text"], select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 12px;
+    border: 1px solid #0288d1;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #0288d1; /* Bright blue button */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #0277bd; /* Darker blue on hover */
+}
+
+#results {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+pre {
+    white-space: pre-wrap; /* Ensure long lines wrap */
+    background-color: #f5f5f5; /* Light gray background for code */
+    padding: 10px;
+    border-radius: 4px;
+}
