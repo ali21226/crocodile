@@ -21,8 +21,21 @@
         </select>
         <input type="text" id="pattern" name="pattern" placeholder="Enter regex pattern" style="display: none;">
         <button type="submit">Crawl</button>
+        <button type="button" id="showResultsButton" style="display: none;">Show Results</button>
     </form>
-    <div id="results"></div>
+
+    <!-- Container for displaying results in grid layout -->
+    <div id="resultsContainer">
+        <div id="results" class="grid"></div>
+    </div>
+
+    <!-- Modal structure -->
+    <div id="imageModal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="modalImage">
+        <div id="caption"></div>
+    </div>
+
     <script>
         document.getElementById('type').addEventListener('change', function () {
             const patternInput = document.getElementById('pattern');
@@ -39,12 +52,69 @@
             const type = document.getElementById('type').value;
             const pattern = document.getElementById('pattern').value;
 
-            fetch(`/crawl/?url=${url}&type=${type}&pattern=${pattern}`)
+            fetch(`/crawl/?url=${encodeURIComponent(url)}&type=${encodeURIComponent(type)}&pattern=${encodeURIComponent(pattern)}`)
                 .then(response => response.json())
                 .then(data => {
                     const resultsDiv = document.getElementById('results');
-                    resultsDiv.innerHTML = `<h2>Results</h2><pre>${JSON.stringify(data.results, null, 2)}</pre>`;
+                    const resultsContainer = document.getElementById('resultsContainer');
+                    const showResultsButton = document.getElementById('showResultsButton');
+                    resultsDiv.innerHTML = '';
+
+                    if (data.results.length > 0) {
+                        // Show the "Show Results" button
+                        showResultsButton.style.display = 'block';
+
+                        // Store results for later display
+                        window.crawlResults = data.results;
+                    } else {
+                        // Hide the "Show Results" button if no results
+                        showResultsButton.style.display = 'none';
+                    }
                 });
+        });
+
+        document.getElementById('showResultsButton').addEventListener('click', function () {
+            const resultsDiv = document.getElementById('results');
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsDiv.innerHTML = ''; // Clear previous content
+
+            if (window.crawlResults && window.crawlResults.length > 0) {
+                window.crawlResults.forEach((result, index) => {
+                    if (result.endsWith('.png') || result.endsWith('.jpg') || result.endsWith('.jpeg')) {
+                        resultsDiv.innerHTML += `
+                            <div class="grid-item">
+                                <span>${index + 1}</span><img src="${result}" alt="Result Image" class="resultImage">
+                            </div>`;
+                    } else {
+                        resultsDiv.innerHTML += `<pre>${result}</pre>`;
+                    }
+                });
+
+                resultsContainer.style.display = 'block'; // Show the results container
+            }
+        });
+
+        // Modal functionality
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const caption = document.getElementById('caption');
+
+        document.getElementById('results').addEventListener('click', function (event) {
+            if (event.target && event.target.classList.contains('resultImage')) {
+                modal.style.display = 'block';
+                modalImage.src = event.target.src;
+                caption.innerHTML = event.target.alt;
+            }
+        });
+
+        document.querySelector('.close').addEventListener('click', function () {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', function (event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
         });
     </script>
 </body>
