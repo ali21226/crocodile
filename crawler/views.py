@@ -1,3 +1,4 @@
+# crawler/views.py
 import re
 import requests
 from django.core.files.base import ContentFile
@@ -5,10 +6,32 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
-from .models import CrawledImage
+from media.models import Photo
 
 def index(request):
     return render(request, 'crawler/index.html')
+
+def generate_unique_id():
+    import uuid
+    return str(uuid.uuid4())
+
+def generate_unique_filename(url):
+    import hashlib
+    return hashlib.sha256(url.encode('utf-8')).hexdigest()
+
+def save_photo(url, path):
+    response = requests.get(url)
+    if response.status_code == 200:
+        photo = Photo(
+            url=url,
+            size=len(response.content),
+            path=path,
+            unique_id=generate_unique_id()
+        )
+        photo.image.save(f'{generate_unique_filename(url)}.jpg', ContentFile(response.content))
+        photo.save()
+        return photo
+    return None
 
 def crawl(request):
     url = request.GET.get('url')
@@ -35,12 +58,9 @@ def crawl(request):
                     for img_url in images:
                         img_url = urljoin(url, img_url)  # Ensure the image URL is absolute
                         try:
-                            img_response = requests.get(img_url)
-                            img_response.raise_for_status()  # Check if the request was successful
-                            img_name = urlparse(img_url).path.split("/")[-1]
-                            img = CrawledImage(url=img_url)
-                            img.image.save(img_name, ContentFile(img_response.content), save=True)
-                            data['results'].append(img.image.url)
+                            img = save_photo(img_url, url)
+                            if img:
+                                data['results'].append(img.image.url)
                         except requests.RequestException as e:
                             print(f"Error fetching image {img_url}: {e}")
                 if not data['results']:
