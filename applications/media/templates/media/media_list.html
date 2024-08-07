@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Media List</title>
+</head>
+<body>
+    <h1>Photos</h1>
+    <ul>
+        {% for photo in photos %}
+            <li>
+                <img src="{{ photo.image.url }}" alt="{{ photo.url }}" width="100">
+                <p>URL: {{ photo.url }}</p>
+                <p>Size: {{ photo.size }} bytes</p>
+                <p>Path: {{ photo.path }}</p>
+                <p>ID: {{ photo.id }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h1>Audios</h1>
+    <ul>
+        {% for audio in audios %}
+            <li>
+                <audio controls>
+                    <source src="{{ audio.audio_file.url }}" type="audio/mpeg">
+                </audio>
+                <p>URL: {{ audio.url }}</p>
+                <p>Size: {{ audio.size }} bytes</p>
+                <p>Path: {{ audio.path }}</p>
+                <p>ID: {{ audio.id }}</p>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

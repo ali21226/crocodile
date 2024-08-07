@@ -6,8 +6,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('media/', include('media.urls')),
-    path('', include('crawler.urls')),  # This should route the root URL to crawler.urls
+    path('media/', include('applications.media.urls')),
+    path('', include('applications.crawler.urls')),  # This should route the root URL to crawler.urls
 ]
 
 if settings.DEBUG:
