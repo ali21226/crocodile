@@ -24,12 +24,10 @@
         <button type="button" id="showResultsButton" style="display: none;">Show Results</button>
     </form>
 
-    <!-- Container for displaying results in grid layout -->
     <div id="resultsContainer">
         <div id="results" class="grid"></div>
     </div>
 
-    <!-- Modal structure -->
     <div id="imageModal" class="modal">
         <span class="close">&times;</span>
         <img class="modal-content" id="modalImage">
@@ -67,8 +65,12 @@
                         // Store results for later display
                         window.crawlResults = data.results;
                     } else {
-                        // Hide the "Show Results" button if no results
-                        showResultsButton.style.display = 'none';
+                        // Display "not found" image immediately
+                        resultsDiv.innerHTML = `
+                            <div class="grid-item">
+                                <img src="/static/images/notfound.png" alt="Not Found Image" class="resultImage">
+                            </div>`;
+                        resultsContainer.style.display = 'block';
                     }
                 });
         });
@@ -80,14 +82,10 @@
 
             if (window.crawlResults && window.crawlResults.length > 0) {
                 window.crawlResults.forEach((result, index) => {
-                    if (result.endsWith('.png') || result.endsWith('.jpg') || result.endsWith('.jpeg')) {
-                        resultsDiv.innerHTML += `
-                            <div class="grid-item">
-                                <span>${index + 1}</span><img src="${result}" alt="Result Image" class="resultImage">
-                            </div>`;
-                    } else {
-                        resultsDiv.innerHTML += `<pre>${result}</pre>`;
-                    }
+                    resultsDiv.innerHTML += `
+                        <div class="grid-item">
+                            <span>${index + 1}</span><img src="${result}" alt="Result Image" class="resultImage">
+                        </div>`;
                 });
 
                 resultsContainer.style.display = 'block'; // Show the results container
