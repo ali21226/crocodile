@@ -16,7 +16,6 @@ class Photo(models.Model):
     def save(self, *args, **kwargs):
         if not self.website_name:
             self.website_name = self.extract_website_name(self.url)
-
         super().save(*args, **kwargs)
 
     @staticmethod
@@ -27,12 +26,11 @@ class Photo(models.Model):
 
 class Email(models.Model):
     id = models.AutoField(primary_key=True)
+    email = models.EmailField(unique=True)
     url = models.URLField()
-    size = models.PositiveIntegerField()
     path = models.CharField(max_length=255, null=True)
     website_name = models.CharField(max_length=255)
-    image = models.ImageField(upload_to=f'images/')
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+
 
     def save(self, *args, **kwargs):
         if not self.website_name:

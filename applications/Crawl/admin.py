@@ -1,8 +1,7 @@
 # Crawl/admin.py
 from django.contrib import admin
 from django.utils.html import format_html
-
-from .models import Photo, Audio , Email
+from .models import Photo, Audio, Email
 
 
 @admin.register(Photo)
@@ -27,7 +26,7 @@ class AudioAdmin(admin.ModelAdmin):
 
 
 @admin.register(Email)
-class TextAdmin(admin.ModelAdmin):
-    list_display = ('id', 'website_name', 'size', 'url')
-    readonly_fields = ('id', 'website_name', 'size')
-    fields = ('url', 'size', 'path', 'id', 'website_name', 'audio')
+class EmailAdmin(admin.ModelAdmin):
+    list_display = ('id', 'website_name', 'email', 'url')
+    readonly_fields = ('id', 'website_name')
+    fields = ('email', 'url', 'path', 'id', 'website_name')

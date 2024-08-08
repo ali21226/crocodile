@@ -1,6 +1,7 @@
 # crawler/views.py
 import re
-
+import os
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -8,7 +9,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 import requests
 from django.utils.crypto import get_random_string
-from applications.Crawl.models import Photo
+from applications.Crawl.models import Photo, Email
 from io import BytesIO
 from PIL import Image
 
@@ -40,6 +41,26 @@ def save_photo(url, path):
         return photo
 
 
+def save_email_to_db(email, url, website_name):
+    Email.objects.get_or_create(
+        email=email,
+        url=url,
+        website_name=website_name
+    )
+
+
+def save_emails_to_file(emails, website_name):
+    directory = os.path.join(settings.MEDIA_ROOT, 'Email')
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    filename = f"{website_name}.txt"
+    file_path = os.path.join(directory, filename)
+    with open(file_path, 'w') as f:
+        for email in emails:
+            f.write(f"{email}\n")
+    return file_path
+
+
 def generate_unique_filename(url):
     return get_random_string(10)
 
@@ -67,6 +88,7 @@ def crawl(request):
             response = requests.get(url)
             response.raise_for_status()
             soup = BeautifulSoup(response.content, 'html.parser')
+            website_name = extract_website_name(url)
 
             if crawl_type == 'photos':
                 images = [img['src'] for img in soup.find_all('img', src=True)]
@@ -81,18 +103,28 @@ def crawl(request):
                             print(f"Error fetching image {img_url}: {e}")
                 if not data['results']:
                     data['results'] = ['/static/images/notfound.png']
+
             elif crawl_type == 'voices':
                 data['results'] = [audio['src'] for audio in soup.find_all('audio', src=True)]
                 if not data['results']:
                     data['results'] = ['/static/images/notfound.png']
+
             elif crawl_type == 'emails':
-                data['results'] = re.findall(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', soup.get_text())
-                if not data['results']:
+                emails = re.findall(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', soup.get_text())
+                if emails:
+                    for email in emails:
+                        save_email_to_db(email, url, website_name)
+                    file_path = save_emails_to_file(emails, website_name)
+                    data['results'] = emails
+                    data['file_path'] = file_path  # Include file path in the response for reference
+                else:
                     data['results'] = ['/static/images/notfound.png']
+
             elif crawl_type == 'regex':
                 data['results'] = re.findall(pattern, soup.get_text())
                 if not data['results']:
                     data['results'] = ['/static/images/notfound.png']
+
         except requests.RequestException as e:
             print(f"Error fetching URL {url}: {e}")
             data['results'] = ['/static/images/notfound.png']
