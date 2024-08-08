@@ -110,7 +110,7 @@ def crawl(request):
                     data['results'] = ['/static/images/notfound.png']
 
             elif crawl_type == 'emails':
-                emails = re.findall(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', soup.get_text())
+                emails = re.findall(r'[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}', soup.get_text())
                 if emails:
                     for email in emails:
                         save_email_to_db(email, url, website_name)

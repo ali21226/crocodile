@@ -234,82 +234,83 @@
         <div id="caption"></div>
     </div>
 
-    <script>
-        document.getElementById('type').addEventListener('change', function () {
-            const patternInput = document.getElementById('pattern');
-            if (this.value === 'regex') {
-                patternInput.style.display = 'block';
-            } else {
-                patternInput.style.display = 'none';
-            }
-        });
+<script>
+    document.getElementById('crawlForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const url = document.getElementById('url').value;
+        const type = document.getElementById('type').value;
+        const pattern = document.getElementById('pattern').value;
+        const uniquePhotos = document.getElementById('unique_photos').checked;
 
-        document.getElementById('crawlForm').addEventListener('submit', function (event) {
-            event.preventDefault();
-            const url = document.getElementById('url').value;
-            const type = document.getElementById('type').value;
-            const pattern = document.getElementById('pattern').value;
-            const uniquePhotos = document.getElementById('unique_photos').checked;
+        fetch(`/crawl/?url=${encodeURIComponent(url)}&type=${encodeURIComponent(type)}&pattern=${encodeURIComponent(pattern)}&unique_photos=${uniquePhotos}`)
+            .then(response => response.json())
+            .then(data => {
+                const resultsDiv = document.getElementById('results');
+                const resultsContainer = document.getElementById('resultsContainer');
+                const showResultsButton = document.getElementById('showResultsButton');
+                resultsDiv.innerHTML = '';
 
-            fetch(`/crawl/?url=${encodeURIComponent(url)}&type=${encodeURIComponent(type)}&pattern=${encodeURIComponent(pattern)}&unique_photos=${uniquePhotos}`)
-                .then(response => response.json())
-                .then(data => {
-                    const resultsDiv = document.getElementById('results');
-                    const resultsContainer = document.getElementById('resultsContainer');
-                    const showResultsButton = document.getElementById('showResultsButton');
-                    resultsDiv.innerHTML = '';
+                if (data.results.length > 0) {
+                    showResultsButton.style.display = 'block';
+                    window.crawlResults = data.results;
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div class="grid-item">
+                            <img src="/static/images/notfound.png" alt="Not Found Image" class="resultImage">
+                        </div>`;
+                    resultsContainer.style.display = 'block';
+                }
+            });
+    });
 
-                    if (data.results.length > 0) {
-                        showResultsButton.style.display = 'block';
-                        window.crawlResults = data.results;
-                    } else {
-                        resultsDiv.innerHTML = `
-                            <div class="grid-item">
-                                <img src="/images/notfound.png" alt="Not Found Image" class="resultImage">
-                            </div>`;
-                        resultsContainer.style.display = 'block';
-                    }
-                });
-        });
+    document.getElementById('showResultsButton').addEventListener('click', function () {
+        const resultsDiv = document.getElementById('results');
+        const resultsContainer = document.getElementById('resultsContainer');
+        resultsDiv.innerHTML = '';
 
-        document.getElementById('showResultsButton').addEventListener('click', function () {
-            const resultsDiv = document.getElementById('results');
-            const resultsContainer = document.getElementById('resultsContainer');
-            resultsDiv.innerHTML = '';
+        if (window.crawlResults && window.crawlResults.length > 0) {
+            const crawlType = document.getElementById('type').value;
 
-            if (window.crawlResults && window.crawlResults.length > 0) {
-                window.crawlResults.forEach((result, index) => {
+            window.crawlResults.forEach((result, index) => {
+                if (crawlType === 'photos') {
                     resultsDiv.innerHTML += `
                         <div class="grid-item">
-                            <span>${index + 1}</span><img src="${result}" alt="Result Image" class="resultImage">
+                            <img src="${result}" alt="Result Image" class="resultImage">
                         </div>`;
-                });
+                } else if (crawlType === 'emails') {
+                    resultsDiv.innerHTML += `
+                        <div class="grid-item">
+                            <p>${result}</p>
+                        </div>`;
+                }
+            });
 
-                resultsContainer.style.display = 'block';
-            }
-        });
+            resultsContainer.style.display = 'block';
+        }
+    });
 
-        const modal = document.getElementById('imageModal');
-        const modalImage = document.getElementById('modalImage');
-        const caption = document.getElementById('caption');
+    const modal = document.getElementById('imageModal');
+    const modalImage = document.getElementById('modalImage');
+    const caption = document.getElementById('caption');
 
-        document.getElementById('results').addEventListener('click', function (event) {
-            if (event.target && event.target.classList.contains('resultImage')) {
-                modal.style.display = 'block';
-                modalImage.src = event.target.src;
-                caption.innerHTML = event.target.alt;
-            }
-        });
+    document.getElementById('results').addEventListener('click', function (event) {
+        if (event.target && event.target.classList.contains('resultImage')) {
+            modal.style.display = 'block';
+            modalImage.src = event.target.src;
+            caption.innerHTML = event.target.alt;
+        }
+    });
 
-        document.querySelector('.close').addEventListener('click', function () {
+    document.querySelector('.close').addEventListener('click', function () {
+        modal.style.display = 'none';
+    });
+
+    window.addEventListener('click', function (event) {
+        if (event.target === modal) {
             modal.style.display = 'none';
-        });
+        }
+    });
+</script>
 
-        window.addEventListener('click', function (event) {
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-    </script>
 </body>
 </html>
