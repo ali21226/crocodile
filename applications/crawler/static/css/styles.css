@@ -7,16 +7,32 @@
     box-sizing: border-box;
 }
 
+/* Import the Black Chancery font */
+@font-face {
+    font-family: 'BlackChancery';
+    src: url('https://www.fontspace.com/s/misc/blackchancery.ttf') format('truetype');
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #e0f2f1; /* Light teal background */
     color: #333;
 }
 
-h1 {
-    color: #0288d1; /* Bright blue */
+.header {
     text-align: center;
     margin: 20px 0;
+}
+
+.header .crocodile {
+    font-family: 'BlackChancery', cursive;
+    font-size: 48px;
+    color: #004d40; /* Dark green */
+}
+
+.header h1 {
+    font-size: 32px;
+    color: #004d40; /* Dark green */
 }
 
 form {
@@ -32,19 +48,19 @@ label {
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
-    color: #0288d1;
+    color: #004d40; /* Dark green */
 }
 
 input[type="text"], select {
     width: 100%;
     padding: 8px;
     margin-bottom: 12px;
-    border: 1px solid #0288d1;
+    border: 1px solid #004d40; /* Dark green border */
     border-radius: 4px;
 }
 
 button {
-    background-color: #0288d1; /* Bright blue button */
+    background-color: #004d40; /* Dark green button */
     color: white;
     border: none;
     padding: 10px 15px;
@@ -55,7 +71,7 @@ button {
 }
 
 button:hover {
-    background-color: #0277bd; /* Darker blue on hover */
+    background-color: #00332d; /* Darker green on hover */
 }
 
 #showResultsButton {

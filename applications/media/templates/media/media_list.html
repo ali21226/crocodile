@@ -1,34 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Media List</title>
 </head>
 <body>
-    <h1>Photos</h1>
+    <form method="post" action="{% url 'media_list' %}">
+        {% csrf_token %}
+        <label for="unique_photos">Crawl only unique photos:</label>
+        <input type="checkbox" id="unique_photos" name="unique_photos">
+        <button type="submit">Crawl</button>
+    </form>
+
+    <h2>Photos</h2>
     <ul>
         {% for photo in photos %}
-            <li>
-                <img src="{{ photo.image.url }}" alt="{{ photo.url }}" width="100">
-                <p>URL: {{ photo.url }}</p>
-                <p>Size: {{ photo.size }} bytes</p>
-                <p>Path: {{ photo.path }}</p>
-                <p>ID: {{ photo.id }}</p>
-            </li>
+        <li>{{ photo.url }} - {{ photo.size }} bytes</li>
         {% endfor %}
     </ul>
 
-    <h1>Audios</h1>
+    <h2>Audios</h2>
     <ul>
         {% for audio in audios %}
-            <li>
-                <audio controls>
-                    <source src="{{ audio.audio_file.url }}" type="audio/mpeg">
-                </audio>
-                <p>URL: {{ audio.url }}</p>
-                <p>Size: {{ audio.size }} bytes</p>
-                <p>Path: {{ audio.path }}</p>
-                <p>ID: {{ audio.id }}</p>
-            </li>
+        <li>{{ audio.url }}</li>
         {% endfor %}
     </ul>
 </body>

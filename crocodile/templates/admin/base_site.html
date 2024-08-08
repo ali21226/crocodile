@@ -1,0 +1,34 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Crocodile{% endblock %}
+
+{% block branding %}
+<style>
+    /* Import the custom font */
+    @import url('https://fonts.googleapis.com/css2?family=Black+Chancery&display=swap');
+
+    #site-name {
+        font-family: 'Black Chancery', cursive; /* Apply custom font */
+        color: #004d40; /* Dark teal */
+        font-size: 2.5em; /* Larger font size */
+        margin: 0;
+        padding: 10px 0;
+        text-align: center;
+    }
+
+    #site-name a {
+        color: #004d40; /* Dark teal */
+        text-decoration: none;
+    }
+
+    #site-name a:hover {
+        color: #00332e; /* Even darker teal on hover */
+    }
+</style>
+
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Crocodile</a></h1>
+{% endblock %}
+
+{% block nav-global %}
+<!-- Optionally add custom styles for the global navigation here -->
+{% endblock %}

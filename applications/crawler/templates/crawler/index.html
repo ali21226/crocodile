@@ -6,12 +6,212 @@
     <title>Web Crawler</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <!-- Link to BlackChancery font -->
+    <link href="https://fonts.googleapis.com/css2?family=Black+Chancery&display=swap" rel="stylesheet">
+    <style>
+        /* Add some custom styles for better appearance */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #e3f2fd; /* Light blue background */
+            color: #333;
+        }
+
+        h1 {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            color: #0d47a1; /* Dark blue */
+            margin: 20px 0;
+            font-size: 2.5em; /* Adjusted size */
+        }
+
+        h2 {
+            font-family: 'Black Chancery', cursive;
+            text-align: center;
+            color: #0d47a1; /* Dark blue */
+            font-size: 3em; /* Larger size for Crocodile */
+            margin: 20px 0;
+        }
+
+        #crawlForm {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #0d47a1; /* Dark blue */
+        }
+
+        input[type="text"], select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #0d47a1; /* Dark blue */
+            border-radius: 4px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #1976d2;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 34px;
+            background: #1976d2; /* Blue */
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #1565c0; /* Darker blue */
+        }
+
+        #resultsContainer {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #ffffff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            display: none;
+        }
+
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .grid-item {
+            flex: 1 1 calc(33.333% - 10px);
+            box-sizing: border-box;
+        }
+
+        .grid-item img {
+            width: 100%;
+            border-radius: 4px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            padding-top: 60px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .modal-content {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: #bbb;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #caption {
+            margin: auto;
+            display: block;
+            width: 80%;
+            max-width: 700px;
+            text-align: center;
+            color: #ccc;
+            padding: 10px 0;
+            height: 150px;
+        }
+
+        @media only screen and (max-width: 700px) {
+            .modal-content {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
+    <h2>Crocodile</h2>
     <h1>Web Crawler</h1>
     <form id="crawlForm">
         <label for="url">URL:</label>
         <input type="text" id="url" name="url" required>
+
+        <label for="unique_photos">Crawl only unique photos:</label>
+        <label class="switch">
+            <input type="checkbox" id="unique_photos" name="unique_photos">
+            <span class="slider"></span>
+        </label>
+
         <label for="type">Crawl Type:</label>
         <select id="type" name="type" required>
             <option value="photos">Photos</option>
@@ -49,8 +249,9 @@
             const url = document.getElementById('url').value;
             const type = document.getElementById('type').value;
             const pattern = document.getElementById('pattern').value;
+            const uniquePhotos = document.getElementById('unique_photos').checked;
 
-            fetch(`/crawl/?url=${encodeURIComponent(url)}&type=${encodeURIComponent(type)}&pattern=${encodeURIComponent(pattern)}`)
+            fetch(`/crawl/?url=${encodeURIComponent(url)}&type=${encodeURIComponent(type)}&pattern=${encodeURIComponent(pattern)}&unique_photos=${uniquePhotos}`)
                 .then(response => response.json())
                 .then(data => {
                     const resultsDiv = document.getElementById('results');
@@ -59,13 +260,9 @@
                     resultsDiv.innerHTML = '';
 
                     if (data.results.length > 0) {
-                        // Show the "Show Results" button
                         showResultsButton.style.display = 'block';
-
-                        // Store results for later display
                         window.crawlResults = data.results;
                     } else {
-                        // Display "not found" image immediately
                         resultsDiv.innerHTML = `
                             <div class="grid-item">
                                 <img src="/images/notfound.png" alt="Not Found Image" class="resultImage">
@@ -78,7 +275,7 @@
         document.getElementById('showResultsButton').addEventListener('click', function () {
             const resultsDiv = document.getElementById('results');
             const resultsContainer = document.getElementById('resultsContainer');
-            resultsDiv.innerHTML = ''; // Clear previous content
+            resultsDiv.innerHTML = '';
 
             if (window.crawlResults && window.crawlResults.length > 0) {
                 window.crawlResults.forEach((result, index) => {
@@ -88,11 +285,10 @@
                         </div>`;
                 });
 
-                resultsContainer.style.display = 'block'; // Show the results container
+                resultsContainer.style.display = 'block';
             }
         });
 
-        // Modal functionality
         const modal = document.getElementById('imageModal');
         const modalImage = document.getElementById('modalImage');
         const caption = document.getElementById('caption');
