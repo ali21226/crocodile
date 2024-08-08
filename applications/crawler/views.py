@@ -8,8 +8,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 import requests
 from django.utils.crypto import get_random_string
-
-from applications.media.models import Photo
+from applications.Crawl.models import Photo
 from io import BytesIO
 from PIL import Image
 

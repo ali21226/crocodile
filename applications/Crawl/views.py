@@ -1,8 +1,8 @@
-# media/views.py
+# Crawl/views.py
 import requests
 from django.core.files.base import ContentFile
 from django.utils.crypto import get_random_string
-from .models import Photo, Audio
+from .models import Photo, Audio, Email
 from io import BytesIO
 from PIL import Image
 from urllib.parse import urlparse
@@ -12,7 +12,8 @@ from django.http import JsonResponse
 def media_list(request):
     photos = Photo.objects.all()
     audios = Audio.objects.all()
-    return render(request, 'media/media_list.html', {'photos': photos, 'audios': audios})
+    email = Email.objects.all()
+    return render(request, 'media/media_list.html', {'photos': photos, 'audios': audios , 'email': email})
 
 def save_photo(url, path, unique_photos):
     response = requests.get(url)
