@@ -73,7 +73,7 @@ def extract_website_name(url):
 def crawl(request):
     url = request.GET.get('url')
     crawl_type = request.GET.get('type')
-    pattern = request.GET.get('pattern', '')  # Default to empty string if pattern is not provided
+    pattern = request.GET.get('pattern', '')
     data = {
         'url': url,
         'type': crawl_type,
@@ -116,7 +116,7 @@ def crawl(request):
                         save_email_to_db(email, url, website_name)
                     file_path = save_emails_to_file(emails, website_name)
                     data['results'] = emails
-                    data['file_path'] = file_path  # Include file path in the response for reference
+                    data['file_path'] = file_path
                 else:
                     data['results'] = ['/static/images/notfound.png']
 
