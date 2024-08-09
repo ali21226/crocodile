@@ -7,6 +7,8 @@ from .models import Photo, Audio, Email
 @admin.register(Photo)
 class PhotoAdmin(admin.ModelAdmin):
     list_display = ('id', 'website_name', 'size', 'url', 'image_tag')
+    list_filter = ('website_name', )
+    search_fields = ('website_name',)
     readonly_fields = ('id', 'website_name', 'size', 'image_tag')
     fields = ('url', 'size', 'path', 'id', 'website_name', 'image', 'avatar', 'image_tag')
 
@@ -28,5 +30,7 @@ class AudioAdmin(admin.ModelAdmin):
 @admin.register(Email)
 class EmailAdmin(admin.ModelAdmin):
     list_display = ('id', 'website_name', 'email', 'url')
+    list_filter = ('website_name', )
+    search_fields = ('email',)
     readonly_fields = ('id', 'website_name')
     fields = ('email', 'url', 'path', 'id', 'website_name')

@@ -58,7 +58,10 @@ ROOT_URLCONF = 'crocodile.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, '../crocodile/crocodile/templates')],
+        'DIRS': [
+            os.path.join(BASE_DIR, '../crocodile/crocodile/templates'),
+            os.path.join(BASE_DIR, 'applications/Crawl/templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

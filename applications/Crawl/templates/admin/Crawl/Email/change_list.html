@@ -1,0 +1,21 @@
+{% extends "admin/change_list.html" %}
+
+{% block extrahead %}
+<style>
+    .search-container {
+        display: flex;
+        align-items: center;
+    }
+    .search-container label {
+        margin-right: 10px;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block search_form %}
+<div class="search-container">
+    <label for="searchbox">Search Email:</label>
+    {{ block.super }}
+</div>
+{% endblock %}
