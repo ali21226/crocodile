@@ -9,9 +9,8 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 import requests
 from django.utils.crypto import get_random_string
-from applications.Crawl.models import Photo, Email
+from applications.Crawl.models import Photo, Email, Audio
 from io import BytesIO
-from PIL import Image
 
 
 def index(request):
@@ -69,6 +68,22 @@ def extract_website_name(url):
     parsed_url = urlparse(url)
     return parsed_url.netloc
 
+def save_audio(url, path):
+    response = requests.get(url)
+    if response.status_code == 200:
+        file_name = generate_unique_filename(url) + os.path.splitext(url)[1]  # Use original file extension
+        audio = Audio(
+            url=url,
+            size=len(response.content),
+            path=path,
+            website_name=extract_website_name(url),
+        )
+        audio.audio.save(file_name, ContentFile(response.content))
+        audio.save()
+        return audio
+    return None
+
+
 
 def crawl(request):
     url = request.GET.get('url')
@@ -105,7 +120,17 @@ def crawl(request):
                     data['results'] = ['/static/images/notfound.png']
 
             elif crawl_type == 'voices':
-                data['results'] = [audio['src'] for audio in soup.find_all('audio', src=True)]
+                audio_urls = [audio['src'] for audio in soup.find_all('audio', src=True)]
+                audio_urls += [source['src'] for source in soup.find_all('source', src=True)]
+                if audio_urls:
+                    for audio_url in audio_urls:
+                        audio_url = urljoin(url, audio_url)
+                        try:
+                            audio = save_audio(audio_url, url)
+                            if audio:
+                                data['results'].append(audio.audio.url)
+                        except requests.RequestException as e:
+                            print(f"Error fetching audio {audio_url}: {e}")
                 if not data['results']:
                     data['results'] = ['/static/images/notfound.png']
 

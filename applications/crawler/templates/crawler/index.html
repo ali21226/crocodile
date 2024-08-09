@@ -144,6 +144,14 @@
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
         }
 
+        .audio-item {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -280,6 +288,11 @@
                 } else if (crawlType === 'emails') {
                     resultsDiv.innerHTML += `
                         <div class="grid-item">
+                            <p>${result}</p>
+                        </div>`;
+                } else if (crawlType === 'voices') {
+                    resultsDiv.innerHTML += `
+                        <div class="audio-item">
                             <p>${result}</p>
                         </div>`;
                 }
